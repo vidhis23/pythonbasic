@@ -8,3 +8,17 @@ def camel_to_snake(fields):
 fields = ["FirstName", "LastName", "Age"]
 snake_case_fields = camel_to_snake(fields)
 print(snake_case_fields)
+
+
+def generate_file(list1, list2, filename):
+    with open(filename, 'w') as file:
+        for index, (item1, item2) in enumerate(zip(list1, list2)):
+            file.write(f"('pqr', '{item1}', {index}, {index+1}, '{item2}')\n")
+
+# Example lists
+list1 = ['sm1fff', 'sm2', 'sm3']
+list2 = ['so', 'so1', 'so2']
+filename = 'output.txt'
+
+# Generate file
+generate_file(list1, list2, filename)
