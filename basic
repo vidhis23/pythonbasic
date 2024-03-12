@@ -1,1 +1,10 @@
-abcd
+def camel_to_snake(fields):
+    snake_case_fields = []
+    for field in fields:
+        snake_case_field = field[0].lower() + ''.join(['_' + char.lower() if char.isupper() else char for char in field[1:]])
+        snake_case_fields.append(snake_case_field)
+    return snake_case_fields
+
+fields = ["FirstName", "LastName", "Age"]
+snake_case_fields = camel_to_snake(fields)
+print(snake_case_fields)
