@@ -49,3 +49,17 @@ def adjust_spacing(input_file, output_file):
 input_file = 'input.txt'
 output_file = 'output.txt'
 adjust_spacing(input_file, output_file)
+
+
+
+def format_columns(input_list):
+    formatted_columns = []
+    for column in input_list:
+        formatted_columns.append(f"{column} varchar(240) null")
+    return formatted_columns
+
+# Example usage
+input_list = ['id', 'name']
+formatted_output = format_columns(input_list)
+for column in formatted_output:
+    print(column)
