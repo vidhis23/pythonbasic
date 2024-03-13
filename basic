@@ -22,3 +22,30 @@ filename = 'output.txt'
 
 # Generate file
 generate_file(list1, list2, filename)
+
+
+
+def adjust_spacing(input_file, output_file):
+    with open(input_file, 'r') as file:
+        lines = file.readlines()
+
+    # Split lines into columns
+    columns = [list(map(str.strip, line.strip('()\n').split(','))) for line in lines]
+
+    # Determine the maximum width for each column
+    max_widths = [max(len(item) for item in column) for column in zip(*columns)]
+
+    # Adjust spacing for each line using maximum widths
+    adjusted_lines = []
+    for column in columns:
+        adjusted_parts = [part.ljust(max_width) for part, max_width in zip(column, max_widths)]
+        adjusted_lines.append('(' + ', '.join(adjusted_parts) + ')\n')
+
+    # Write adjusted lines to the output file
+    with open(output_file, 'w') as file:
+        file.writelines(adjusted_lines)
+
+# Example usage
+input_file = 'input.txt'
+output_file = 'output.txt'
+adjust_spacing(input_file, output_file)
