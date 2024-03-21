@@ -62,3 +62,29 @@ def format_columns(input_list, output_file):
 input_list = ['id', 'name']
 output_file = 'formatted_columns.txt'
 format_columns(input_list, output_file)
+
+
+
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class Main {
+    public static void main(String[] args) {
+        String dateString = "2024-03-21"; // Your date string
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = sdf.parse(dateString);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            // Calendar.DAY_OF_WEEK returns values from 1 (Sunday) to 7 (Saturday)
+            String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+            String dayOfWeekString = daysOfWeek[dayOfWeek - 1];
+            System.out.println("Day of the week for " + dateString + " is: " + dayOfWeekString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
