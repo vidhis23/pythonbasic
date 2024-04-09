@@ -88,3 +88,25 @@ public class Main {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$filePath = "largefile.csv"
+$outputPath = "output"
+
+Get-Content -Path $filePath -TotalCount 1000 | Out-File "$outputPath\first_1000_lines.csv" -Encoding utf8
