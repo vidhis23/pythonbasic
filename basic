@@ -123,3 +123,19 @@ WHEN MATCHED THEN
   UPDATE SET target.additional_column = source.additional_column
 WHEN NOT MATCHED THEN
   INSERT (isin, cusip, additional_column) VALUES (source.isin, source.cusip, source.additional_column);
+
+
+
+
+SELECT
+    request_session_id AS SessionID,
+    DB_NAME(resource_database_id) AS DatabaseName,
+    OBJECT_NAME(resource_associated_entity_id) AS LockedObjectName,
+    request_mode AS LockType,
+    request_status AS Status
+FROM
+    sys.dm_tran_locks
+WHERE
+    resource_type = 'OBJECT'
+    AND resource_database_id = DB_ID('YourDatabaseName')
+    AND resource_associated_entity_id = OBJECT_ID('YourTableName');
