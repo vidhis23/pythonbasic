@@ -110,3 +110,16 @@ $filePath = "largefile.csv"
 $outputPath = "output"
 
 Get-Content -Path $filePath -TotalCount 1000 | Out-File "$outputPath\first_1000_lines.csv" -Encoding utf8
+
+
+
+
+
+
+MERGE INTO table_A AS target
+USING other_table AS source
+ON target.isin = source.isin OR target.cusip = source.cusip
+WHEN MATCHED THEN
+  UPDATE SET target.additional_column = source.additional_column
+WHEN NOT MATCHED THEN
+  INSERT (isin, cusip, additional_column) VALUES (source.isin, source.cusip, source.additional_column);
