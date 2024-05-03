@@ -139,3 +139,18 @@ WHERE
     resource_type = 'OBJECT'
     AND resource_database_id = DB_ID('YourDatabaseName')
     AND resource_associated_entity_id = OBJECT_ID('YourTableName');
+
+
+UPDATE a
+SET
+    parentName = CASE
+                    WHEN b.parentName IS NOT NULL AND b.parentName <> '' THEN b.parentName
+                    -- ELSE a.parentName -- Removed ELSE clause
+                 END,
+    scName = CASE
+                WHEN b.scName IS NOT NULL AND b.scName <> '' THEN b.scName
+                -- ELSE a.scName -- Removed ELSE clause
+             END
+FROM
+    TableA a
+    JOIN TableB b ON a.id = b.id;
