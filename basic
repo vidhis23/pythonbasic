@@ -154,3 +154,18 @@ SET
 FROM
     TableA a
     JOIN TableB b ON a.id = b.id;
+
+
+
+1)Task assignments often occur on Mondays for completion within a two-day timeframe, aligning with our frequent releases. While I understand the need for agility, providing a lead time of 2-3 days prior to the start date would enable us to better grasp the task's requirements and address any initial questions. Having tasks or stories assigned 2-3 days prior to sprint planning would greatly help in understanding the upcoming work and preparing adequately.
+2)Our frequent release schedule, while necessary, can sometimes impact productivity, particularly when significant time is needed for release-related tasks. Allocating ample time for these activities could help maintain productivity levels and ensure a smoother workflow.
+3)I've noticed a lack of story grooming discussions, which could enhance our understanding of the tasks at hand and ensure better alignment with our project goals. Having a good number of story grooming sessions could significantly improve our preparedness and clarity on upcoming work.
+4)Given our workload, which often includes four releases per sprint, the time allocated for individual tasks can be minimal. This tight schedule can affect testing and may impact our confidence in the work completed.
+5)The absence of retrospective calls deprives us of an opportunity to voice concerns and offer suggestions for process improvement. Including these sessions could foster a more collaborative and constructive work environment.
+6)Similarly, implementing pair programming could offer valuable insights and ensure a deeper understanding of the project for all team members. It's a practice that's widely recognized for its benefits in software development.
+7)Allowing a day for Pull Request (PR) review could significantly improve the quality of our codebase and facilitate better collaboration among team members.
+8)Occasionally, I encounter challenges during the evening when awaiting input. Having alternative tasks to work on during such instances could help mitigate delays and optimize time management.
+9)I've noticed that Jira tickets are sometimes added after Change Request (CR) approval, leading to delays in task commencement. It would be beneficial to have tasks assigned prior to CR approval to streamline the workflow.
+10)Lastly, I want to emphasize the importance of maintaining a positive and respectful tone, especially during team interactions. A more considerate approach could contribute to a healthier work environment and enhance team morale.
+11)Thank you for considering these points. I believe addressing these issues could contribute to greater efficiency and effectiveness within our team.
+12) Additionally, it would be helpful to know in advance which weekends are expected to have work so that I can plan my weekend accordingly. This foresight would allow for better personal time management and work-life balance.
