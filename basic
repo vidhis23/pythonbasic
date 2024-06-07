@@ -180,6 +180,29 @@ JOIN (
     WHERE rn = 1
 ) AS B ON A.ID = B.ID;
 
+# Define the two lists of strings
+list1 = ["apple", "banana", "cherry", "date"]
+list2 = ["banana", "date", "fig", "grape"]
+
+# Find the common elements
+common_elements = list(set(list1) & set(list2))
+
+# Print the common elements
+print("Common elements:", common_elements)
+
+
+MERGE TableB AS Target
+USING TableA AS Source
+ON Target.ID = Source.ID
+WHEN MATCHED THEN
+    UPDATE SET
+        Target.Name = Source.Name,
+        Target.Value = Source.Value
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT (ID, Name, Value)
+    VALUES (Source.ID, Source.Name, Source.Value);
+
+
 1)Task assignments often occur on Mondays for completion within a two-day timeframe, aligning with our frequent releases. While I understand the need for agility, providing a lead time of 2-3 days prior to the start date would enable us to better grasp the task's requirements and address any initial questions. Having tasks or stories assigned 2-3 days prior to sprint planning would greatly help in understanding the upcoming work and preparing adequately.
 2)Our frequent release schedule, while necessary, can sometimes impact productivity, particularly when significant time is needed for release-related tasks. Allocating ample time for these activities could help maintain productivity levels and ensure a smoother workflow.
 3)I've noticed a lack of story grooming discussions, which could enhance our understanding of the tasks at hand and ensure better alignment with our project goals. Having a good number of story grooming sessions could significantly improve our preparedness and clarity on upcoming work.
