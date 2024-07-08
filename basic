@@ -227,6 +227,28 @@ WHEN NOT MATCHED BY TARGET THEN
         map.forEach(consumer);
 
 
+CREATE VIEW UniqueEntries AS
+WITH Combined AS (
+    SELECT id, name,
+        ROW_NUMBER() OVER (PARTITION BY id ORDER BY 
+            CASE 
+                WHEN name IS NOT NULL AND LTRIM(RTRIM(name)) != '' AND name != 'N.A.' THEN 1
+                ELSE 2
+            END
+        ) AS rn
+    FROM (
+        SELECT id, name FROM a
+        UNION ALL
+        SELECT id, name FROM b
+        UNION ALL
+        SELECT id, name FROM c
+    ) AS AllTables
+)
+SELECT id, name
+FROM Combined
+WHERE rn = 1;
+
+
 1)Task assignments often occur on Mondays for completion within a two-day timeframe, aligning with our frequent releases. While I understand the need for agility, providing a lead time of 2-3 days prior to the start date would enable us to better grasp the task's requirements and address any initial questions. Having tasks or stories assigned 2-3 days prior to sprint planning would greatly help in understanding the upcoming work and preparing adequately.
 2)Our frequent release schedule, while necessary, can sometimes impact productivity, particularly when significant time is needed for release-related tasks. Allocating ample time for these activities could help maintain productivity levels and ensure a smoother workflow.
 3)I've noticed a lack of story grooming discussions, which could enhance our understanding of the tasks at hand and ensure better alignment with our project goals. Having a good number of story grooming sessions could significantly improve our preparedness and clarity on upcoming work.
