@@ -364,7 +364,20 @@ public class YourTestClass {
     }
 }
 
+        ArgumentCaptor<ResultSetExtractor> resultSetExtractorCaptor = ArgumentCaptor.forClass(ResultSetExtractor.class);
 
+        // Setting up the behavior of mockNamedJdbcTemplate
+        when(mockNamedJdbcTemplate.query(anyString(), resultSetExtractorCaptor.capture())).thenAnswer(invocation -> {
+            ResultSetExtractor<Map<Integer, Long>> resultSetExtractor = resultSetExtractorCaptor.getValue();
+
+            // Mocking ResultSet
+            ResultSet resultSet = mock(ResultSet.class);
+            when(resultSet.next()).thenReturn(true, true, false); // returns true twice, then false
+            when(resultSet.getLong("batchId")).thenReturn(1L);
+
+            // Using the captured ResultSetExtractor to process the mock ResultSet
+            return resultSetExtractor.extractData(resultSet);
+        });
 
 1)Task assignments often occur on Mondays for completion within a two-day timeframe, aligning with our frequent releases. While I understand the need for agility, providing a lead time of 2-3 days prior to the start date would enable us to better grasp the task's requirements and address any initial questions. Having tasks or stories assigned 2-3 days prior to sprint planning would greatly help in understanding the upcoming work and preparing adequately.
 2)Our frequent release schedule, while necessary, can sometimes impact productivity, particularly when significant time is needed for release-related tasks. Allocating ample time for these activities could help maintain productivity levels and ensure a smoother workflow.
