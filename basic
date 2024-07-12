@@ -320,6 +320,52 @@ ArgumentCaptor<ResultSetExtractor<Map<Integer, Long>>> captor = ArgumentCaptor.f
 
 
 
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+public class YourTestClass {
+
+    @Test
+    public void testGetBatchSequence() throws SQLException {
+        // Mocking NamedParameterJdbcTemplate
+        NamedParameterJdbcTemplate mockNamedJdbcTemplate = mock(NamedParameterJdbcTemplate.class);
+
+        // ArgumentCaptor to capture the ResultSetExtractor
+        ArgumentCaptor<ResultSetExtractor> resultSetExtractorCaptor = ArgumentCaptor.forClass(ResultSetExtractor.class);
+
+        // Setting up the behavior of mockNamedJdbcTemplate
+        when(mockNamedJdbcTemplate.query(anyString(), resultSetExtractorCaptor.capture())).thenReturn(null);
+
+        // Invoke the method to test, which uses mockNamedJdbcTemplate.query()
+        // Example method call (you need to replace this with the actual method call):
+        // yourService.getBatchSequence();
+
+        // Now you have captured the ResultSetExtractor
+        ResultSetExtractor<Map<Integer, Long>> resultSetExtractor = resultSetExtractorCaptor.getValue();
+
+        // Mocking ResultSet
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, true, false); // returns true twice, then false
+        when(resultSet.getLong("batchId")).thenReturn(1L);
+
+        // Using the captured ResultSetExtractor to process the mock ResultSet
+        Map<Integer, Long> result = resultSetExtractor.extractData(resultSet);
+
+        // Assertions to verify the expected behavior
+        // Example assertion (you need to replace this with the actual assertion):
+        // assertEquals(expectedResult, result);
+    }
+}
+
+
+
 1)Task assignments often occur on Mondays for completion within a two-day timeframe, aligning with our frequent releases. While I understand the need for agility, providing a lead time of 2-3 days prior to the start date would enable us to better grasp the task's requirements and address any initial questions. Having tasks or stories assigned 2-3 days prior to sprint planning would greatly help in understanding the upcoming work and preparing adequately.
 2)Our frequent release schedule, while necessary, can sometimes impact productivity, particularly when significant time is needed for release-related tasks. Allocating ample time for these activities could help maintain productivity levels and ensure a smoother workflow.
 3)I've noticed a lack of story grooming discussions, which could enhance our understanding of the tasks at hand and ensure better alignment with our project goals. Having a good number of story grooming sessions could significantly improve our preparedness and clarity on upcoming work.
