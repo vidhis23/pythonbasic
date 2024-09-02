@@ -434,3 +434,37 @@ private Path tempDir;
 10)Lastly, I want to emphasize the importance of maintaining a positive and respectful tone, especially during team interactions. A more considerate approach could contribute to a healthier work environment and enhance team morale.
 11)Thank you for considering these points. I believe addressing these issues could contribute to greater efficiency and effectiveness within our team.
 12) Additionally, it would be helpful to know in advance which weekends are expected to have work so that I can plan my weekend accordingly. This foresight would allow for better personal time management and work-life balance.
+
+
+
+#!/bin/bash
+
+# Check if the correct number of arguments is provided
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <path> <filename>"
+  exit 1
+fi
+
+# Assign the parameters to variables
+path=$1
+filename=$2
+
+# Find the file matching the pattern in the specified path
+file=$(find "$path" -name "$filename")
+
+# Check if the file exists
+if [ -z "$file" ]; then
+  echo "File not found: $filename in $path"
+  exit 1
+fi
+
+# Unzip the file
+gunzip "$file"
+
+# Confirm if the unzipping was successful
+if [ $? -eq 0 ]; then
+  echo "Successfully unzipped: ${file}"
+else
+  echo "Failed to unzip: ${file}"
+  exit 1
+fi
