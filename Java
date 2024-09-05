@@ -1,0 +1,239 @@
+CREATE TABLE table_a (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    user VARCHAR(255) NOT NULL,
+    time DATETIME NOT NULL
+);
+
+
+CREATE TABLE master_table (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    place VARCHAR(255),
+    date DATE
+);
+
+
+CREATE PROCEDURE insert_into_table_a(
+    IN unique_id BIGINT,
+    IN name VARCHAR(255), 
+    IN user VARCHAR(255), 
+    IN time DATETIME
+)
+BEGIN
+    INSERT INTO table_a (id, name, user, time) VALUES (unique_id, name, user, time);
+END;
+
+CREATE PROCEDURE insert_into_master_table(
+    IN unique_id BIGINT,
+    IN name VARCHAR(255),
+    IN place VARCHAR(255),
+    IN date DATE
+)
+BEGIN
+    INSERT INTO master_table (id, name, place, date) VALUES (unique_id, name, place, date);
+END;
+
+
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
+
+@Data
+@Entity
+@Table(name = "table_a")
+public class TableA {
+    @Id
+    private Long id;
+    
+    private String name;
+    private String user;
+    private LocalDateTime time;
+}
+
+
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.sql.Date;
+
+@Data
+@Entity
+@Table(name = "master_table")
+public class MasterTable {
+    @Id
+    private Long id;
+
+    private String name;
+    private String place;
+    private Date date;
+}
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface TableARepository extends JpaRepository<TableA, Long> {
+
+    @Query(value = "CALL insert_into_table_a(:unique_id, :name, :user, :time)", nativeQuery = true)
+    void insertIntoTableA(
+        @Param("unique_id") Long uniqueId,
+        @Param("name") String name,
+        @Param("user") String user,
+        @Param("time") java.time.LocalDateTime time
+    );
+}
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface MasterTableRepository extends JpaRepository<MasterTable, Long> {
+
+    @Query(value = "CALL insert_into_master_table(:unique_id, :name, :place, :date)", nativeQuery = true)
+    void insertIntoMasterTable(
+        @Param("unique_id") Long uniqueId,
+        @Param("name") String name,
+        @Param("place") String place,
+        @Param("date") java.sql.Date date
+    );
+}
+
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+public class MyService {
+
+    @Autowired
+    private TableARepository tableARepository;
+
+    @Autowired
+    private MasterTableRepository masterTableRepository;
+
+    @Transactional
+    public void insertDataAndMasterTable(String name, String user, LocalDateTime time, String place, Date date) {
+        long uniqueId = Math.abs(UUID.randomUUID().getMostSignificantBits());
+
+        try {
+            // Insert into Table A
+            tableARepository.insertIntoTableA(uniqueId, name, user, time);
+
+            // Insert into Master Table with additional fields
+            masterTableRepository.insertIntoMasterTable(uniqueId, name, place, date);
+        } catch (DataAccessException e) {
+            // Rollback the transaction and handle the exception
+            throw new RuntimeException("Error executing stored procedure: " + e.getMessage(), e);
+        }
+    }
+}
+
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An error occurred: " + ex.getMessage());
+    }
+
+    // Additional exception handlers can be added here
+}
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+
+@RestController
+@RequestMapping("/api")
+public class MyController {
+
+    @Autowired
+    private MyService myService;
+
+    @PostMapping("/insert")
+    public ResponseEntity<String> insert(@RequestBody MyRequest request) {
+        try {
+            myService.insertDataAndMasterTable(
+                request.getName(), 
+                request.getUser(), 
+                request.getTime(),
+                request.getPlace(),
+                request.getDate()
+            );
+            return ResponseEntity.ok("Data inserted successfully");
+        } catch (RuntimeException e) {
+            // Handle exception and return appropriate response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+import lombok.Data;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+
+@Data
+public class MyRequest {
+    private String name;
+    private String user;
+    private LocalDateTime time;
+    private String place;
+    private Date date;
+}
+
+
+{
+    "name": "John Doe",
+    "user": "johndoe",
+    "time": "2024-09-04T14:30:00",
+    "place": "New York",
+    "date": "2024-09-04"
+}
+
+
+{
+    "name": "John Doe",
+    "user": "johndoe",
+    "time": "2024-09-04T14:30:00",
+    "place": "New York",
+    "date": "2024-09-04"
+}
