@@ -237,3 +237,22 @@ public class MyRequest {
     "place": "New York",
     "date": "2024-09-04"
 }
+
+
+
+@Repository
+public class MyStoredProcRepositoryCustomImpl implements MyStoredProcRepositoryCustom {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<MyStoredProcResultDTO> callMyStoredProc(String param1, String param2) {
+        String sql = "EXEC my_stored_proc @param1 = ?, @param2 = ?";
+        return jdbcTemplate.query(
+            sql,
+            new Object[]{param1, param2},
+            new BeanPropertyRowMapper<>(MyStoredProcResultDTO.class)
+        );
+    }
+}
