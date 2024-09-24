@@ -256,3 +256,98 @@ public class MyStoredProcRepositoryCustomImpl implements MyStoredProcRepositoryC
         );
     }
 }
+
+
+
+
+CREATE PROCEDURE GetGroupedData
+    @name NVARCHAR(50) = NULL,
+    @age INT = NULL,
+    @location NVARCHAR(100) = NULL,
+    @gender NVARCHAR(10) = NULL,
+    @startDate DATE = NULL,
+    @endDate DATE = NULL
+AS
+BEGIN
+    DECLARE @sql NVARCHAR(MAX) = 'SELECT name, COUNT(*) AS count, MAX(insertTime) AS latestInsertTime FROM TableA WHERE 1=1';
+
+    -- Dynamic filtering
+    IF @name IS NOT NULL
+        SET @sql = @sql + ' AND name = @name';
+    IF @age IS NOT NULL
+        SET @sql = @sql + ' AND age = @age';
+    IF @location IS NOT NULL
+        SET @sql = @sql + ' AND location = @location';
+    IF @gender IS NOT NULL
+        SET @sql = @sql + ' AND gender = @gender';
+    IF @startDate IS NOT NULL
+        SET @sql = @sql + ' AND insertTime >= @startDate';
+    IF @endDate IS NOT NULL
+        SET @sql = @sql + ' AND insertTime <= @endDate';
+
+    -- Group by clause
+    SET @sql = @sql + ' GROUP BY name, location';
+
+    -- Execute the dynamically constructed SQL
+    EXEC sp_executesql @sql,
+        N'@name NVARCHAR(50), @age INT, @location NVARCHAR(100), @gender NVARCHAR(10), @startDate DATE, @endDate DATE',
+        @name, @age, @location, @gender, @startDate, @endDate;
+END;
+
+
+public class GroupedDataDTO {
+    private String name;
+    private int count;
+    private LocalDateTime latestInsertTime;
+
+}
+
+
+    public List<GroupedDataDTO> getGroupedData(String name, Integer age, String location, String gender, LocalDate startDate, LocalDate endDate) {
+        String sql = "EXEC GetGroupedData ?, ?, ?, ?, ?, ?";
+
+        // Use BeanPropertyRowMapper to map the result set to GroupedDataDTO
+        return jdbcTemplate.query(
+            sql,
+            new Object[]{name, age, location, gender, startDate, endDate},
+            new BeanPropertyRowMapper<>(GroupedDataDTO.class)
+        );
+    }
+	
+	
+	    @GetMapping("/filter")
+    public ResponseEntity<List<Map<String, Object>>> filterUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer age,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String occupation,
+            @RequestParam(required = false) String status) {
+
+        List<Map<String, Object>> result = userService.getFilteredUsers(name, age, city, gender, occupation, status);
+        return ResponseEntity.ok(result);
+    }
+	
+	CREATE PROCEDURE FilteredUsers
+    @name NVARCHAR(100) = NULL,
+    @age INT = NULL,
+    @city NVARCHAR(100) = NULL,
+    @gender NVARCHAR(10) = NULL,
+    @occupation NVARCHAR(100) = NULL,
+    @status NVARCHAR(50) = NULL
+AS
+BEGIN
+    SELECT 
+        id, 
+        city, 
+        gender, 
+        COUNT(*) AS user_count
+    FROM users
+    WHERE (@name IS NULL OR name = @name)
+      AND (@age IS NULL OR age = @age)
+      AND (@city IS NULL OR city = @city)
+      AND (@gender IS NULL OR gender = @gender)
+      AND (@occupation IS NULL OR occupation = @occupation)
+      AND (@status IS NULL OR status = @status)
+    GROUP BY id, city, gender;
+END
