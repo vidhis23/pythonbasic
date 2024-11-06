@@ -351,3 +351,17 @@ BEGIN
       AND (@status IS NULL OR status = @status)
     GROUP BY id, city, gender;
 END
+
+
+
+  getGridData(): Observable<IGRate[]> {
+    return this.apiCall().pipe(
+      map((dataList: IGRate[]) => {
+        return dataList.map(data => {
+          // Format each `lastModified` using DatePipe
+          data.lastModified = this.datePipe.transform(data.lastModified, 'MM/dd/yyyy') || data.lastModified;
+          return data;
+        });
+      })
+    );
+  }
